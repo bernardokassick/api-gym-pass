@@ -1,8 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { RegisterUseCase } from "@/use-cases/register-use-case";
 import { z } from "zod";
-import { PrismaUsersRepostory } from "@/repositories/prisma/prisma-users-repository";
 import { UserAlreadyExistsError } from "@/use-cases/errors/user-already-exists-error";
+import { makeRegisterUseCase } from "@/use-cases/factories/make-register-use-case";
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
     const registerBodySchema = z.object({
@@ -12,8 +11,8 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     });
 
     const { name, email, password } = registerBodySchema.parse(request.body);
-    const prismaUsersRepostory = new PrismaUsersRepostory();
-    const registerUseCase = new RegisterUseCase(prismaUsersRepostory);
+
+    const registerUseCase = makeRegisterUseCase();
 
     try {
         await registerUseCase.createUser({ name, email, password });
