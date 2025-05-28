@@ -24,8 +24,8 @@ describe("Get user profile use case", () => {
             userId: createdUser.id,
         });
 
-        expect(user.id).toEqual(expect.any(String));
-        expect(user.name).toEqual(createdUser.name);
+        await expect(user.id).toEqual(expect.any(String));
+        await expect(user.name).toEqual(createdUser.name);
     });
 
     it("shouldn't be able to get user profile with wrong id", async () => {

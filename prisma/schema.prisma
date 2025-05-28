@@ -39,7 +39,7 @@ model Gym {
 model CheckIn {
   id           String    @id @default(uuid())
   created_at   DateTime  @default(now())
-  valideted_at DateTime?
+  validated_at DateTime?
 
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
