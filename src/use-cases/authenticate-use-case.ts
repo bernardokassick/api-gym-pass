@@ -8,7 +8,6 @@ interface AuthenticateUseCaseRequest {
     password: string;
 }
 
-//TODO
 interface AuthenticateUseCaseResponse {
     user: User;
 }
@@ -21,8 +20,6 @@ export class AuthenticateUseCase {
         password,
     }: AuthenticateUseCaseRequest): Promise<AuthenticateUseCaseResponse> {
         const user = await this.usersRepository.findByEmail(email);
-        console.log("user found: " + user?.email);
-        console.log(password);
 
         if (!user) {
             throw new InvalidCredentialsError();
