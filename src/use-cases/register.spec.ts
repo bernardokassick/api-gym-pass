@@ -1,8 +1,8 @@
 import { expect, test, describe, it, beforeEach } from "vitest";
-import { RegisterUseCase } from "./register-use-case";
+import { RegisterUseCase } from "./register";
 import { User } from "@prisma/client";
 import { compare } from "bcryptjs";
-import { InMemoryUsersRepostory } from "@/repositories/in-memory/in-memory-users-repository";
+import { InMemoryUsersRepostory } from "@/repositories/in-memory/in-memory-user-repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
 
 let userRepository: InMemoryUsersRepostory;
