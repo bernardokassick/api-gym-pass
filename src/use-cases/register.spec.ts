@@ -1,6 +1,5 @@
 import { expect, test, describe, it, beforeEach } from "vitest";
 import { RegisterUseCase } from "./register";
-import { User } from "@prisma/client";
 import { compare } from "bcryptjs";
 import { InMemoryUsersRepostory } from "@/repositories/in-memory/in-memory-user-repository";
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
@@ -15,7 +14,7 @@ describe("Register use case", () => {
     });
 
     it("should to register", async () => {
-        const { userCreated } = await registerUseCase.createUser({
+        const { userCreated } = await registerUseCase.execute({
             name: "John Doe",
             email: "johndoe@gmail.com",
             password: "123456",
@@ -25,7 +24,7 @@ describe("Register use case", () => {
     });
 
     it("should hash user password upon registration", async () => {
-        const { userCreated } = await registerUseCase.createUser({
+        const { userCreated } = await registerUseCase.execute({
             name: "John Doe",
             email: "johndoe@gmail.com",
             password: "123456",
@@ -42,14 +41,14 @@ describe("Register use case", () => {
     it("should not be able to register with same email twice", async () => {
         const email = "johndoe@gmail.com";
 
-        await registerUseCase.createUser({
+        await registerUseCase.execute({
             name: "John Doe",
             email,
             password: "123456",
         });
 
         await expect(
-            registerUseCase.createUser({
+            registerUseCase.execute({
                 name: "John Doe",
                 email,
                 password: "123456",

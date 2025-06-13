@@ -2,6 +2,9 @@ import { CheckIn } from "@prisma/client";
 import { CheckInRepository } from "@/repositories/check-in-repository";
 import { GymRepository } from "@/repositories/gym-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { getDistanceBetweenCoordinates } from "@/utils/get-distante-between-coord";
+import { LimitDailyCheckInError } from "./errors/limit-daily-check-in-error";
+import { MaxDistanceError } from "./errors/max-distance-error";
 
 interface CheckInUseCaseRequest {
     userId: string;
@@ -20,14 +23,30 @@ export class CheckInUseCase {
         private gymRepository: GymRepository
     ) {}
 
-    async create({
+    MAX_DISTANCE_IN_KILOMETERS = 0.1; // 100 meters
+
+    async execute({
         userId,
         gymId,
+        userLatitude,
+        userLongitude,
     }: CheckInUseCaseRequest): Promise<CheckInUseCaseResponse> {
         const gymFound = await this.gymRepository.findById(gymId);
 
         if (!gymFound) {
             throw new ResourceNotFoundError();
+        }
+
+        const distance = getDistanceBetweenCoordinates(
+            { latitude: userLatitude, longitude: userLongitude },
+            {
+                latitude: gymFound.latitude.toNumber(),
+                longitude: gymFound.longitude.toNumber(),
+            }
+        );
+
+        if (distance > this.MAX_DISTANCE_IN_KILOMETERS) {
+            throw new MaxDistanceError();
         }
 
         const checkInFound =
@@ -37,7 +56,7 @@ export class CheckInUseCase {
             );
 
         if (checkInFound != null) {
-            throw new Error("User already checked in.");
+            throw new LimitDailyCheckInError();
         }
 
         const checkIn = await this.checkInRepository.create({

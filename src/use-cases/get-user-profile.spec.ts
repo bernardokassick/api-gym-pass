@@ -14,23 +14,23 @@ describe("Get user profile use case", () => {
     });
 
     it("should be able to get user profile", async () => {
-        const createdUser = await userRepository.create({
+        const userCreated = await userRepository.create({
             name: "John Doe",
             email: "johndoe@gmail.com",
             password_hash: await hash("123456", 6),
         });
 
-        const { user } = await getUserProfileUseCase.getProfile({
-            userId: createdUser.id,
+        const { user } = await getUserProfileUseCase.execute({
+            userId: userCreated.id,
         });
 
         await expect(user.id).toEqual(expect.any(String));
-        await expect(user.name).toEqual(createdUser.name);
+        await expect(user.name).toEqual(userCreated.name);
     });
 
     it("shouldn't be able to get user profile with wrong id", async () => {
         await expect(() =>
-            getUserProfileUseCase.getProfile({
+            getUserProfileUseCase.execute({
                 userId: "12345",
             })
         ).rejects.toBeInstanceOf(ResourceNotFoundError);
